@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform _movePoint;
     [SerializeField] private LayerMask _whatStopMovement;
     [SerializeField] private GameObject _bomb;
+    [SerializeField] private FloatingJoystick _floatingJoystick;
 
     private Animator _anim;
     private float _inputHorizontal;
@@ -34,10 +35,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        _buttonBomb = Input.GetKeyDown(KeyCode.Z);
-        _inputHorizontal = Input.GetAxisRaw("Horizontal");
-        _inputVertical = Input.GetAxisRaw("Vertical");  
-
+        _inputHorizontal = _floatingJoystick.Horizontal;
+        _inputVertical = _floatingJoystick.Vertical;
         transform.position = Vector3.MoveTowards(transform.position, _movePoint.position, _moveSpeed * Time.deltaTime);
 
         if (Vector3.Distance(transform.position, _movePoint.position) <= .5f)
@@ -81,7 +80,11 @@ public class PlayerController : MonoBehaviour
                 ChangeAnimationState(PLAYER_IDLE);
             }   
         }
-        if(_buttonBomb && GameObject.FindGameObjectsWithTag("Bomb").Length < _bombsAllowed)
+        
+    }
+    public void HandleBombs() 
+    {
+        if(GameObject.FindGameObjectsWithTag("Bomb").Length < _bombsAllowed)
         {
             Instantiate(_bomb, new Vector2(_movePoint.position.x, _movePoint.position.y), _movePoint.rotation);
         }   
